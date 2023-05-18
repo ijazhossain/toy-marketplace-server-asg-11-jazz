@@ -27,7 +27,13 @@ async function run() {
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         const toysCollection = client.db("toyDB").collection('toys');
-        // Add Data to DB
+        // Get or Read data from DB
+        app.get('/allToys', async (req, res) => {
+            const cursor = toysCollection.find({}).limit(20)
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+        // Add or create Data to DB
         app.post('/addToy', async (req, res) => {
             const newToy = req.body;
             console.log(newToy);
