@@ -9,7 +9,7 @@ app.use(express.json())
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster1.0nsziui.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
+// console.log(uri);
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -26,6 +26,14 @@ async function run() {
         await client.connect();
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
+        const toysCollection = client.db("toyDB").collection('toys');
+        // Add Data to DB
+        app.post('/addToy', async (req, res) => {
+            const newToy = req.body;
+            console.log(newToy);
+            const result = await toysCollection.insertOne(newToy)
+            res.send(result)
+        })
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
