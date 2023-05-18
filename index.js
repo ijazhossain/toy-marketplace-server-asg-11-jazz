@@ -27,6 +27,13 @@ async function run() {
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         const toysCollection = client.db("toyDB").collection('toys');
+        // Get or read toy by name
+        app.get('/getToysByName/:name', async (req, res) => {
+            const name = req.params.name;
+            console.log(name);
+            const result = await toysCollection.find({ toyName: { $regex: name, $options: "i" } }).toArray();
+            res.send(result)
+        })
         // Get or Read data from DB
         app.get('/allToys', async (req, res) => {
             const cursor = toysCollection.find({}).limit(20)
