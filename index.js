@@ -27,6 +27,31 @@ async function run() {
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         const toysCollection = client.db("toyDB").collection('toys');
+
+        // Get Data from DB sort by price ascending
+        app.get('/myDescendingToy', async (req, res) => {
+            console.log(req.query.email);
+
+            let query = {};
+            if (req.query?.email) {
+                query = { sellerEmail: req.query.email };
+            }
+            const result = await toysCollection.find(query).sort({ price: -1 }).toArray()
+            res.send(result)
+        })
+
+        // Get Data from DB sort by price ascending
+        app.get('/myAscendingToy', async (req, res) => {
+            console.log(req.query.email);
+
+            let query = {};
+            if (req.query?.email) {
+                query = { sellerEmail: req.query.email };
+            }
+            const result = await toysCollection.find(query).sort({ price: 1 }).toArray()
+            res.send(result)
+        })
+
         // Delete data from DB
         app.delete('/toy/:id', async (req, res) => {
             const id = req.params.id;
@@ -53,6 +78,7 @@ async function run() {
             const result = await toysCollection.updateOne(filter, updatedInfo)
             res.send(result)
         })
+
         // Get or read toy data by user email
         app.get('/myToy', async (req, res) => {
             // console.log(req.query.email);
@@ -63,6 +89,7 @@ async function run() {
             const result = await toysCollection.find(query).toArray()
             res.send(result)
         })
+
         // Get or read toy by id
         app.get('/toy/:toyId', async (req, res) => {
             const toyId = req.params.toyId;
@@ -71,6 +98,7 @@ async function run() {
             const result = await toysCollection.findOne(query)
             res.send(result)
         })
+
         // Get or read toy by toyName
         app.get('/getToysByName/:name', async (req, res) => {
             const name = req.params.name;
@@ -78,12 +106,14 @@ async function run() {
             const result = await toysCollection.find({ toyName: { $regex: name, $options: "i" } }).toArray();
             res.send(result)
         })
+
         // Get or Read data from DB
         app.get('/allToys', async (req, res) => {
             const cursor = toysCollection.find({}).limit(20)
             const result = await cursor.toArray();
             res.send(result)
         })
+
         // Add or create Data to DB
         app.post('/addToy', async (req, res) => {
             const newToy = req.body;
