@@ -27,6 +27,15 @@ async function run() {
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         const toysCollection = client.db("toyDB").collection('toys');
+        // Delete data from DB
+        app.delete('/toy/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.deleteOne(query);
+            res.send(result)
+        })
+
         // Update toy data to DB
         app.patch('/updateToy/:toyId', async (req, res) => {
             const toyId = req.params.toyId;
