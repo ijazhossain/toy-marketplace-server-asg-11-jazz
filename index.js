@@ -17,15 +17,20 @@ const client = new MongoClient(uri, {
         version: ServerApiVersion.v1,
         strict: true,
         deprecationErrors: true,
-    }
+    },
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    maxPoolSize: 10,
 });
 
 async function run() {
     try {
-        // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-        // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        client.connect((err) => {
+            if (err) {
+                console.err(err);
+                return;
+            }
+        });
         const toysCollection = client.db("toyDB").collection('toys');
         // Get all images from DB
         app.get('/images', async (req, res) => {
@@ -104,7 +109,13 @@ async function run() {
             const result = await toysCollection.updateOne(filter, updatedInfo)
             res.send(result)
         })
-
+        // Get Data for single toy to update
+        app.get('/updateToy/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await toysCollection.findOne(query);
+            res.send(result);
+        })
         // Get or read toy data by user email
         app.get('/myToy', async (req, res) => {
             // console.log(req.query.email);
