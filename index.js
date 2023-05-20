@@ -27,6 +27,14 @@ async function run() {
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         const toysCollection = client.db("toyDB").collection('toys');
+        // Get all images from DB
+        app.get('/images', async (req, res) => {
+            const options = {
+                projection: { imageUrl: 1 },
+            };
+            const result = await toysCollection.find({}, options).sort({ imageUrl: 1 }).toArray()
+            res.send(result)
+        })
 
         // Get data from DB by subcategory name
         app.get('/category/:categoryName', async (req, res) => {
@@ -38,10 +46,10 @@ async function run() {
                 categoryName === 'dragon' ||
                 categoryName === 'fish' ||
                 categoryName === 'animal') {
-                const result = await toysCollection.find(query).toArray();
+                const result = await toysCollection.find(query).limit(6).toArray();
                 res.send(result)
             } else {
-                const result = await toysCollection.find({}).toArray();
+                const result = await toysCollection.find({}).limit(6).toArray();
                 res.send(result)
             }
         })
