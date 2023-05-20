@@ -28,6 +28,24 @@ async function run() {
         await client.db("admin").command({ ping: 1 });
         const toysCollection = client.db("toyDB").collection('toys');
 
+        // Get data from DB by subcategory name
+        app.get('/category/:categoryName', async (req, res) => {
+            const categoryName = req.params.categoryName;
+            console.log(categoryName);
+            const query = { category: categoryName }
+            if (categoryName === 'teddy bear' ||
+                categoryName === 'bird' ||
+                categoryName === 'dragon' ||
+                categoryName === 'fish' ||
+                categoryName === 'animal') {
+                const result = await toysCollection.find(query).toArray();
+                res.send(result)
+            } else {
+                const result = await toysCollection.find({}).toArray();
+                res.send(result)
+            }
+        })
+
         // Get Data from DB sort by price ascending
         app.get('/myDescendingToy', async (req, res) => {
             console.log(req.query.email);
