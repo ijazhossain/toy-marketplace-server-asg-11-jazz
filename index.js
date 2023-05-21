@@ -37,7 +37,7 @@ async function run() {
             const options = {
                 projection: { imageUrl: 1 },
             };
-            const result = await toysCollection.find({}, options).sort({ imageUrl: 1 }).toArray()
+            const result = await toysCollection.find({}, options).limit(30).sort({ imageUrl: 1 }).toArray()
             res.send(result)
         })
 
